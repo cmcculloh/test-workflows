@@ -13,7 +13,6 @@ on:
 
 jobs:
   test1:
-    if: ${{ github.event.pull_request.type.unlabeled && github.event.label.name == 'dev-deployment' }}
     runs-on: ubuntu-latest
     steps:
       - name: my-step
