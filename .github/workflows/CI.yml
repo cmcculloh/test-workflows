@@ -17,5 +17,10 @@ jobs:
     steps:
       - name: my-step
         run: echo "Hello World!"
+      - name: does it run?
+        if: ${{ github.event.pull_request.type.unlabeled }}
+        run: echo "it ran"
+      - name: what label?
+        run: echo ${{github.event.label.name}}"
       - name: echo type
-        run: echo "${{ github.event.pull_request.type }}"
+        run: echo "${{ github.event.pull_request.type }} ${{ github.event.pull_request }}"
