@@ -1,0 +1,40 @@
+name: CD
+
+on:
+  pull_request:
+    types:
+      - closed
+  release:
+    types: [released]
+  workflow_dispatch:
+    inputs:
+      tag:
+        required: true
+        description: "Version to Deploy"
+
+jobs:
+  meta-data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: my-step
+        run: echo "Hello World!"
+      - name: does it run?
+        if: ${{ github.event.pull_request.type.unlabeled }}
+        run: echo "it ran"
+      - name: what label?
+        run: echo "${{github.event.label.name}}"
+      - name: echo type
+        run: echo "${{ github.event_name}} ${{github.event.action}}"
+      - name: Has label?
+        run: echo "Has 'target' label? ${{ contains(github.event.*.labels.*.name, 'target') }}"
+  version:
+    runs-on: [self-hosted, tsa]
+    steps:
+      - name: Makes sure package.json is up to date
+        uses: technote-space/package-version-check-action@v1
+
+  prod-deploy:
+    uses: ./.github/workflows/prod-deploy.yml
+    with:
+      tag: ${{ inputs.tag }}
+    secrets: inherit

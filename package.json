@@ -1,0 +1,23 @@
+{
+  "name": "test-workflows",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "echo \"BUILD WOULD RUN HERE\" && exit 1",
+    "test": "yarn test:format && yarn test:lint && yarn test:unit",
+    "test:unit": "echo \"UNIT TESTS WOULD RUN HERE\" && exit 1",
+    "test:lint": "echo \"LINT TESTS WOULD RUN HERE\" && exit 1",
+    "test:format": "echo \"FORMAT TESTS WOULD RUN HERE\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cmcculloh/test-workflows.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cmcculloh/test-workflows/issues"
+  },
+  "homepage": "https://github.com/cmcculloh/test-workflows#readme"
+}

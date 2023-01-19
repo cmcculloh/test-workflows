@@ -1,0 +1,79 @@
+name: Build
+
+on:
+  workflow_call:
+    inputs:
+      tag:
+        description: "Tag to build (eg 1.0.0|latest), defaults to building whatever branch called it"
+        required: false
+        type: string
+      docker_push:
+        description: "Push the docker image"
+        required: false
+        type: boolean
+        default: true
+      environment:
+        description: "Environment to deploy to (dev|stage|prod)"
+        required: true
+        type: string
+
+jobs:
+  meta-data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: my-step
+        run: echo "Hello World!"
+      - name: does it run?
+        if: ${{ github.event.pull_request.type.unlabeled }}
+        run: echo "it ran"
+      - name: what label?
+        run: echo "${{github.event.label.name}}"
+      - name: echo type
+        run: echo "${{ github.event_name}} ${{github.event.action}}"
+      - name: Has label?
+        run: echo "Has 'target' label? ${{ contains(github.event.*.labels.*.name, 'target') }}"
+  reusable_build:
+    name: Build
+    runs-on: [self-hosted, linux, kubernetes]
+    steps:
+      - name: Get latest
+        if: ${{ inputs.tag == 'latest'}}
+        id: latest
+        uses: gregziegan/fetch-latest-release@v2.0.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: ${{ steps.latest.outputs.tag_name || inputs.tag }}
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.14.2
+      - name: Fetch NPM Token
+        id: fetch_token
+        uses: ./.github/actions/jfrog-fetch-token
+        with:
+          user: ${{ secrets.ARTIFACTORY_USER }}
+          key: ${{ secrets.ARTIFACTORY_KEY }}
+      - name: Install Yarn
+        run: corepack enable
+      - name: Install dependencies
+        run: yarn --immutable
+        env:
+          YARN_NPM_AUTH_IDENT: ${{ steps.fetch_token.outputs.token }}
+      - name: Build
+        run: yarn build
+        env:
+          YARN_NPM_AUTH_IDENT: ${{ steps.fetch_token.outputs.token }}
+          NEXT_PUBLIC_JIRA_TOKEN: ${{ secrets.NEXT_PUBLIC_JIRA_TOKEN }}
+          NEXT_PUBLIC_JIRA_URL: ${{ secrets.NEXT_PUBLIC_JIRA_URL }}
+      - name: Get Tag or SHA
+        id: tag
+        uses: tenhaus/get-release-or-tag@v2
+      - name: Build Docker Image
+        run: echo "BUILD DOCKER IMAGE"
+      - name: Push Docker Image
+        if: ${{inputs.docker_push}}
+        run: echo "PUSH DOCKER IMAGE"

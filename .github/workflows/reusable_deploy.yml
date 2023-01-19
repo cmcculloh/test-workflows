@@ -1,0 +1,40 @@
+name: Deploy
+
+on:
+  workflow_call:
+    inputs:
+      tag:
+        description: "Tag to deploy (eg 1.0.0), defaults to latest"
+        required: false
+        type: string
+      environment:
+        description: "Environment to deploy to (dev|stage|prod)"
+        required: true
+        type: string
+
+jobs:
+  meta-data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: my-step
+        run: echo "Hello World!"
+      - name: does it run?
+        if: ${{ github.event.pull_request.type.unlabeled }}
+        run: echo "it ran"
+      - name: what label?
+        run: echo "${{github.event.label.name}}"
+      - name: echo type
+        run: echo "${{ github.event_name}} ${{github.event.action}}"
+      - name: Has label?
+        run: echo "Has 'target' label? ${{ contains(github.event.*.labels.*.name, 'target') }}"
+  reusable_deploy:
+    name: ${{ inputs.environment }} deploy
+    runs-on: [self-hosted]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Get Tag or SHA
+        id: tag
+        uses: tenhaus/get-release-or-tag@v2
+      - name: Deploy app:${{ inputs.tag || steps.tag.outputs.tag }} to ${{ inputs.environment }} using Harness
+        run: echo "DEPLOY USING HARNESS"
