@@ -20,7 +20,7 @@ jobs:
         run: echo "Has 'target' label? ${{ contains(github.event.*.labels.*.name, 'target') }}"
   code-validation:
     name: Check Format, Lint and Tests
-    runs-on: [self-hosted, tsa]
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout Branch
         uses: actions/checkout@v3
