@@ -4,11 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "echo \"BUILD WOULD RUN HERE\" && exit 1",
+    "build": "echo \"BUILD WOULD RUN HERE\"",
     "test": "yarn test:format && yarn test:lint && yarn test:unit",
-    "test:unit": "echo \"UNIT TESTS WOULD RUN HERE\" && exit 1",
-    "test:lint": "echo \"LINT TESTS WOULD RUN HERE\" && exit 1",
-    "test:format": "echo \"FORMAT TESTS WOULD RUN HERE\" && exit 1"
+    "test:unit": "echo \"UNIT TESTS WOULD RUN HERE\"",
+    "test:lint": "echo \"LINT TESTS WOULD RUN HERE\"",
+    "test:format": "echo \"FORMAT TESTS WOULD RUN HERE\"",
+    "fail": "echo \"FAIL\" && exit 1"
   },
   "repository": {
     "type": "git",
