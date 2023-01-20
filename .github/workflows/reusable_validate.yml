@@ -4,20 +4,6 @@ on:
   workflow_call:
 
 jobs:
-  meta-data:
-    runs-on: ubuntu-latest
-    steps:
-      - name: my-step
-        run: echo "Hello World!"
-      - name: does it run?
-        if: ${{ github.event.pull_request.type.unlabeled }}
-        run: echo "it ran"
-      - name: what label?
-        run: echo "${{github.event.label.name}}"
-      - name: echo type
-        run: echo "${{ github.event_name}} ${{github.event.action}}"
-      - name: Has label?
-        run: echo "Has 'target' label? ${{ contains(github.event.*.labels.*.name, 'target') }}"
   code-validation:
     name: Check Format, Lint and Tests
     runs-on: ubuntu-latest
