@@ -51,24 +51,12 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16.14.2
-      - name: Fetch NPM Token
-        id: fetch_token
-        uses: ./.github/actions/jfrog-fetch-token
-        with:
-          user: ${{ secrets.ARTIFACTORY_USER }}
-          key: ${{ secrets.ARTIFACTORY_KEY }}
       - name: Install Yarn
         run: corepack enable
       - name: Install dependencies
         run: yarn --immutable
-        env:
-          YARN_NPM_AUTH_IDENT: ${{ steps.fetch_token.outputs.token }}
       - name: Build
         run: yarn build
-        env:
-          YARN_NPM_AUTH_IDENT: ${{ steps.fetch_token.outputs.token }}
-          NEXT_PUBLIC_JIRA_TOKEN: ${{ secrets.NEXT_PUBLIC_JIRA_TOKEN }}
-          NEXT_PUBLIC_JIRA_URL: ${{ secrets.NEXT_PUBLIC_JIRA_URL }}
       - name: Get Tag or SHA
         id: tag
         uses: tenhaus/get-release-or-tag@v2
