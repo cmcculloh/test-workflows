@@ -22,7 +22,7 @@ jobs:
       - name: echo type
         run: echo "${{ github.event_name}} ${{github.event.action}}"
       - name: Has label?
-        run: echo "Has 'target' label? ${{ contains(github.event.*.labels.*.name, 'target') }}"
+        run: echo "Has 'release:patch' label? ${{ contains(github.event.*.labels.*.name, 'release:patch') }}"
   version:
     runs-on: ubuntu-latest
     steps:
