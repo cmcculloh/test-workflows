@@ -1,0 +1,22 @@
+changelog:
+  exclude:
+    labels:
+      - norelease
+    authors:
+      - octocat
+  categories:
+    - title: 🚀 Breaking Changes & Huge New Functionality
+      labels:
+        - release:major
+    - title: 🎉 Exciting New Features
+      labels:
+        - release:minor
+    - title: 🐞 Tweaks & Bug Fixes
+      labels:
+        - release:patch
+    - title: 🛠️ DX Only
+      labels:
+        - norelease
+    - title: ⁉️ Other Changes
+      labels:
+        - "*"

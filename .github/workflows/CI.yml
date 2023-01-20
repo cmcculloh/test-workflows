@@ -11,28 +11,13 @@ on:
       - reopened
 
 jobs:
-  meta-data:
-    runs-on: ubuntu-latest
-    steps:
-      - name: my-step
-        run: echo "Hello World!"
-      - name: does it run?
-        if: ${{ github.event.pull_request.type.unlabeled }}
-        run: echo "it ran"
-      - name: what label?
-        run: echo "${{github.event.label.name}}"
-      - name: echo type
-        run: echo "${{ github.event_name}} ${{github.event.action}}"
-      - name: Has label?
-        run: echo "Has 'target' label? ${{ contains(github.event.*.labels.*.name, 'target') }}"
-
   check-labels:
     name: Check labels
     runs-on: ubuntu-latest
     steps:
       - uses: docker://agilepathway/pull-request-label-checker:latest
         with:
-          any_of: version-major,version-minor,version-patch,version-none
+          any_of: release:major,release:minor,release:patch,norelease
           repo_token: ${{ secrets.GITHUB_TOKEN }}
   dev-deploy:
     if: ${{ github.event.action != 'unlabeled' && github.event.pull_request.merged != true }}
