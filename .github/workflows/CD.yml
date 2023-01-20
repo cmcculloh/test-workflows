@@ -21,7 +21,7 @@ jobs:
       - name: Has label?
         run: echo "Has 'target' label? ${{ contains(github.event.*.labels.*.name, 'target') }}"
   version:
-    runs-on: [self-hosted, tsa]
+    runs-on: ubuntu-latest
     steps:
       - name: Makes sure package.json is up to date
         uses: technote-space/package-version-check-action@v1
