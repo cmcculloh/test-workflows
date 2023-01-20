@@ -17,7 +17,7 @@ jobs:
     steps:
       - uses: docker://agilepathway/pull-request-label-checker:latest
         with:
-          any_of: version-major,version-minor,version-patch,version-none
+          any_of: release:major,release:minor,release:patch,norelease
           repo_token: ${{ secrets.GITHUB_TOKEN }}
   dev-deploy:
     if: ${{ github.event.action != 'unlabeled' && github.event.pull_request.merged != true }}

@@ -25,9 +25,13 @@ jobs:
         run: echo "Has 'release:patch' label? ${{ contains(github.event.*.labels.*.name, 'release:patch') }}"
   version:
     runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN_GITHUB }}
     steps:
-      - name: Makes sure package.json is up to date
-        uses: technote-space/package-version-check-action@v1
+      - uses: rymndhng/release-on-push-action@master
+        with:
+          bump_version_scheme: minor
+          use_github_release_notes: true
   prod-deploy:
     if: ${{ github.event.pull_request.merged == true }}
     uses: ./.github/workflows/prod-deploy.yml
