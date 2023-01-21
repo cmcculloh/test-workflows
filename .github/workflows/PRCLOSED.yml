@@ -81,6 +81,10 @@ jobs:
         node-version: ${{ env.node_version }}
         # setting a registry enables the NODE_AUTH_TOKEN env variable where we can set an npm token.  REQUIRED
         registry-url: 'https://registry.npmjs.org'
+    - name: setup git config
+      run: |
+        git config user.name "GitHub Actions Bot"
+        git config user.email "<>"
     - name: Patch?
       if: ${{ contains(github.event.*.labels.*.name, 'release:patch') }}
       run: npm version patch
