@@ -1,3 +1,3 @@
 // stub
 
-console.log("makes another arbitrary change");
+console.log("makes an arbitrary change");
