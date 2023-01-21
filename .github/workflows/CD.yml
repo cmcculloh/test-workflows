@@ -26,11 +26,19 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN_GITHUB }}
     steps:
+      - name: Patch?
+        if: ${{ contains(github.event.*.labels.*.name, 'release:patch') }}
+        run: npm version patch
+      - name: Minor?
+        if: ${{ contains(github.event.*.labels.*.name, 'release:minor') }}
+        run: npm version minor
+      - name: Major?
+        if: ${{ contains(github.event.*.labels.*.name, 'release:major') }}
+        run: npm version major
       - uses: rymndhng/release-on-push-action@master
         with:
           bump_version_scheme: minor
           use_github_release_notes: true
-      - uses: technote-space/package-version-check-action@v1
   prod-deploy:
     if: ${{ github.event.pull_request.merged == true }}
     uses: ./.github/workflows/prod-deploy.yml
