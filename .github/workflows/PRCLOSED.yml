@@ -1,0 +1,106 @@
+name: PR CLOSED
+
+on:
+  pull_request:
+    types:
+      - closed
+
+
+# env:
+#   node_version: lts/*
+
+# concurrency: # prevent concurrent releases
+#   group: npm-bump
+#   cancel-in-progress: true
+
+# jobs:
+#   version_and_release:
+#     runs-on: ubuntu-latest
+#     steps:
+#     - uses: actions/checkout@v3
+#       with:
+#         # fetch full history so things like auto-changelog work properly
+#         fetch-depth: 0
+#     - name: Use Node.js ${{ env.node_version }}
+#       uses: actions/setup-node@v3
+#       with:
+#         node-version: ${{ env.node_version }}
+#         # setting a registry enables the NODE_AUTH_TOKEN env variable where we can set an npm token.  REQUIRED
+#         registry-url: 'https://registry.npmjs.org'
+#     - run: npm i
+#     - name: Version and publish to npm
+#       uses: bcomnes/npm-bump@v2
+#       with:
+#         git_email: bcomnes@gmail.com
+#         git_username: ${{ github.actor }}
+#         newversion: ${{ github.event.inputs.newversion }}
+#         push_version_commit: true # if your prePublishOnly step pushes git commits, you can omit this input or set it to false.
+#         github_token: ${{ secrets.GITHUB_TOKEN }} # built in actions token.  Passed tp gh-release if in use.
+#         npm_token: ${{ secrets.NPM_TOKEN }} # user set secret token generated at npm
+
+
+jobs:
+  meta-data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: my-step
+        run: echo "Hello World!"
+      - name: does it run?
+        if: ${{ github.event.pull_request.type.unlabeled }}
+        run: echo "it ran"
+      - name: what label?
+        run: echo "${{github.event.label.name}}"
+      - name: echo type
+        run: echo "${{ github.event_name}} ${{github.event.action}}"
+      - name: Has label?
+        run: echo "Has 'release:patch' label? ${{ contains(github.event.*.labels.*.name, 'release:patch') }}"
+      # - name: All Info github
+      #   run: echo "${{ github }}"
+      # - name: All Info github.event
+      #   run: echo "${{ toJSON(github.event) }}"
+      # - name: All Info github.event.*
+      #   run: echo "${{ toJSON(github.event.*) }}"
+      - name: All Info github.event.*.labels
+        run: echo "${{ toJSON(github.event.*.labels) }}"
+      - name: All Info github.event.pull_request
+        run: echo "${{ toJSON(github.event.pull_request) }}"
+      - name: All Info github.event.pull_request.type
+        run: echo "${{ toJSON(github.event.pull_request.type) }}"
+  version:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN_GITHUB }}
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        # fetch full history so things like auto-changelog work properly
+        fetch-depth: 0
+    - name: Use Node.js ${{ env.node_version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ env.node_version }}
+        # setting a registry enables the NODE_AUTH_TOKEN env variable where we can set an npm token.  REQUIRED
+        registry-url: 'https://registry.npmjs.org'
+    - name: setup git config
+      run: |
+        git config user.name "GitHub Actions Bot"
+        git config user.email "<>"
+    - name: Patch?
+      if: ${{ contains(github.event.*.labels.*.name, 'release:patch') }}
+      run: npm version patch
+    - name: Minor?
+      if: ${{ contains(github.event.*.labels.*.name, 'release:minor') }}
+      run: npm version minor
+    - name: Major?
+      if: ${{ contains(github.event.*.labels.*.name, 'release:major') }}
+      run: npm version major
+    - name: commit
+      run: |
+        # Stage the file, commit and push
+        git add package.json
+        git commit -m "updates package.json"
+        git push origin master
+    - uses: rymndhng/release-on-push-action@master
+      with:
+        bump_version_scheme: minor
+        use_github_release_notes: true
