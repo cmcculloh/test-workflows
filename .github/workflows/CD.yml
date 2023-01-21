@@ -1,45 +1,45 @@
 name: CD
 
-on:
-  push:
-    branches:
-      - master
+# on:
+#   push:
+#     branches:
+#       - master
 
 
-jobs:
-  meta-data:
-    runs-on: ubuntu-latest
-    steps:
-      - name: my-step
-        run: echo "Hello World!"
-      - name: does it run?
-        if: ${{ github.event.pull_request.type.unlabeled }}
-        run: echo "it ran"
-      - name: what label?
-        run: echo "${{github.event.label.name}}"
-      - name: echo type
-        run: echo "${{ github.event_name}} ${{github.event.action}}"
-      - name: Has label?
-        run: echo "Has 'release:patch' label? ${{ contains(github.event.*.labels.*.name, 'release:patch') }}"
-  version:
-    runs-on: ubuntu-latest
-    env:
-      GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN_GITHUB }}
-    steps:
-      - name: Patch?
-        if: ${{ contains(github.event.*.labels.*.name, 'release:patch') }}
-        run: npm version patch
-      - name: Minor?
-        if: ${{ contains(github.event.*.labels.*.name, 'release:minor') }}
-        run: npm version minor
-      - name: Major?
-        if: ${{ contains(github.event.*.labels.*.name, 'release:major') }}
-        run: npm version major
-      - uses: rymndhng/release-on-push-action@master
-        with:
-          bump_version_scheme: minor
-          use_github_release_notes: true
-  prod-deploy:
-    if: ${{ github.event.pull_request.merged == true }}
-    uses: ./.github/workflows/prod-deploy.yml
-    secrets: inherit
+# jobs:
+#   meta-data:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: my-step
+#         run: echo "Hello World!"
+#       - name: does it run?
+#         if: ${{ github.event.pull_request.type.unlabeled }}
+#         run: echo "it ran"
+#       - name: what label?
+#         run: echo "${{github.event.label.name}}"
+#       - name: echo type
+#         run: echo "${{ github.event_name}} ${{github.event.action}}"
+#       - name: Has label?
+#         run: echo "Has 'release:patch' label? ${{ contains(github.event.*.labels.*.name, 'release:patch') }}"
+#   version:
+#     runs-on: ubuntu-latest
+#     env:
+#       GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN_GITHUB }}
+#     steps:
+#       - name: Patch?
+#         if: ${{ contains(github.event.*.labels.*.name, 'release:patch') }}
+#         run: npm version patch
+#       - name: Minor?
+#         if: ${{ contains(github.event.*.labels.*.name, 'release:minor') }}
+#         run: npm version minor
+#       - name: Major?
+#         if: ${{ contains(github.event.*.labels.*.name, 'release:major') }}
+#         run: npm version major
+#       - uses: rymndhng/release-on-push-action@master
+#         with:
+#           bump_version_scheme: minor
+#           use_github_release_notes: true
+#   prod-deploy:
+#     if: ${{ github.event.pull_request.merged == true }}
+#     uses: ./.github/workflows/prod-deploy.yml
+#     secrets: inherit
