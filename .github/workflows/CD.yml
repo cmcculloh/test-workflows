@@ -22,7 +22,7 @@ jobs:
       - name: Has label?
         run: echo "Has 'release:patch' label? ${{ contains(github.event.*.labels.*.name, 'release:patch') }}"
       - name: All Info github
-        run: echo "${{ toJSON(github) }}"
+        run: echo "${{ github }}"
       - name: All Info github.event
         run: echo "${{ toJSON(github.event) }}"
       - name: All Info github.event.*
