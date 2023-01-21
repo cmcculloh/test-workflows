@@ -94,6 +94,12 @@ jobs:
     - name: Major?
       if: ${{ contains(github.event.*.labels.*.name, 'release:major') }}
       run: npm version major
+    - name: commit
+      run: |
+        # Stage the file, commit and push
+        git add package.json
+        git commit -m "updates package.json"
+        git push origin master
     - uses: rymndhng/release-on-push-action@master
       with:
         bump_version_scheme: minor
