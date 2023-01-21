@@ -1,10 +1,9 @@
-name: CD
+name: PR CLOSED
 
 on:
-  push:
-    branches:
-      - master
-
+  pull_request:
+    types:
+      - closed
 
 jobs:
   meta-data:
@@ -33,25 +32,21 @@ jobs:
         run: echo "${{ toJSON(github.event.pull_request) }}"
       - name: All Info github.event.pull_request.type
         run: echo "${{ toJSON(github.event.pull_request.type) }}"
-  # version:
-  #   runs-on: ubuntu-latest
-  #   env:
-  #     GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN_GITHUB }}
-  #   steps:
-  #     - name: Patch?
-  #       if: ${{ contains(github.event.*.labels.*.name, 'release:patch') }}
-  #       run: npm version patch
-  #     - name: Minor?
-  #       if: ${{ contains(github.event.*.labels.*.name, 'release:minor') }}
-  #       run: npm version minor
-  #     - name: Major?
-  #       if: ${{ contains(github.event.*.labels.*.name, 'release:major') }}
-  #       run: npm version major
-  #     - uses: rymndhng/release-on-push-action@master
-  #       with:
-  #         bump_version_scheme: minor
-  #         use_github_release_notes: true
-  prod-deploy:
-    if: ${{ github.event.pull_request.merged == true }}
-    uses: ./.github/workflows/prod-deploy.yml
-    secrets: inherit
+  version:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN_GITHUB }}
+    steps:
+      - name: Patch?
+        if: ${{ contains(github.event.*.labels.*.name, 'release:patch') }}
+        run: npm version patch
+      - name: Minor?
+        if: ${{ contains(github.event.*.labels.*.name, 'release:minor') }}
+        run: npm version minor
+      - name: Major?
+        if: ${{ contains(github.event.*.labels.*.name, 'release:major') }}
+        run: npm version major
+      - uses: rymndhng/release-on-push-action@master
+        with:
+          bump_version_scheme: minor
+          use_github_release_notes: true
