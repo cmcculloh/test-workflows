@@ -1,44 +1,66 @@
-# name: CD
+name: CD
 
-# on:
-#   push:
-#     branches:
-#       - master
+on:
+  pull_request:
+    types:
+      - closed
 
-# jobs:
-#   meta-data:
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: my-step
-#         run: echo "Hello World!"
-#       - name: does it run?
-#         if: ${{ github.event.pull_request.type.unlabeled }}
-#         run: echo "it ran"
-#       - name: what label?
-#         run: echo "${{github.event.label.name}}"
-#       - name: echo type
-#         run: echo "${{ github.event_name}} ${{github.event.action}}"
-#       - name: Has label?
-#         run: echo "Has 'release:patch' label? ${{ contains(github.event.*.labels.*.name, 'release:patch') }}"
-#   version:
-#     runs-on: ubuntu-latest
-#     env:
-#       GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN_GITHUB }}
-#     steps:
-#       - name: Patch?
-#         if: ${{ contains(github.event.*.labels.*.name, 'release:patch') }}
-#         run: npm version patch
-#       - name: Minor?
-#         if: ${{ contains(github.event.*.labels.*.name, 'release:minor') }}
-#         run: npm version minor
-#       - name: Major?
-#         if: ${{ contains(github.event.*.labels.*.name, 'release:major') }}
-#         run: npm version major
-#       - uses: rymndhng/release-on-push-action@master
-#         with:
-#           bump_version_scheme: minor
-#           use_github_release_notes: true
-#   prod-deploy:
-#     if: ${{ github.event.pull_request.merged == true }}
-#     uses: ./.github/workflows/prod-deploy.yml
-#     secrets: inherit
+jobs:
+  version:
+    if: ${{ github.event.pull_request.merged == true }}
+    runs-on: ubuntu-latest
+    env:
+      # GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN_GITHUB }}
+      GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+      GH_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+      ACCESS_TOKEN_GITHUB: ${{ secrets.test-workflows }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - name: setup git config
+      run: |
+        git config user.name "GitHub Actions Bot"
+        git config user.email "<>"
+    - name: Patch?
+      if: ${{ contains(github.event.*.labels.*.name, 'release:patch') }}
+      run: |
+        echo "patch specified"
+        npm version patch
+    - name: Minor?
+      if: ${{ contains(github.event.*.labels.*.name, 'release:minor') }}
+      run: |
+        echo "minor specified"
+        npm version minor
+    - name: Major?
+      if: ${{ contains(github.event.*.labels.*.name, 'release:major') }}
+      run: |
+        echo "major specified"
+        npm version major
+    - name: Get current npm version
+      id: version
+      run: |
+        PACKAGE_VERSION=$(node -p -e "require('./package.json').version")
+        echo "TAG=${PACKAGE_VERSION}" >> $GITHUB_OUTPUT
+    - name: Push files and tag
+      uses: Amraneze/push-to-protected-branch@main
+      with:
+        repository: ${{ github.repository }}
+        branch_name: ${{ github.ref_name }}
+        github_token: ${{ secrets.ACCESS_TOKEN }}
+        commit_message: 'ci: build version ${{ steps.version.outputs.TAG }}'
+        tag_version: ${{ steps.version.outputs.TAG }}
+        create_tag: false
+        files_to_commit: 'package.json'
+    - name: Delete useless tag that push-to-protected-branch creates that I don't need
+      run: git push origin :refs/tags/${{ steps.version.outputs.TAG }}
+    - name: Do actual release
+      uses: rymndhng/release-on-push-action@master
+      with:
+        bump_version_scheme: minor
+        use_github_release_notes: true
+  prod-deploy:
+    if: ${{ github.event.pull_request.merged == true }}
+    uses: ./.github/workflows/prod-deploy.yml
+    secrets: inherit
