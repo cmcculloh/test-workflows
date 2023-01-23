@@ -117,7 +117,7 @@ jobs:
         create_tag: false
         files_to_commit: 'package.json'
     - name: Delete useless tag that push-to-protected-branch creates that I don't need
-      run: git tag -d ${{ steps.version.outputs.TAG }}
+      run: git push origin :refs/tags/${{ steps.version.outputs.TAG }}
     - name: next step
       uses: rymndhng/release-on-push-action@master
       with:
