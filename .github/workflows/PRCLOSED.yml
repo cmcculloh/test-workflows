@@ -85,6 +85,7 @@ jobs:
         branch_name: ${{ github.ref_name }}
         github_token: ${{ secrets.ACCESS_TOKEN }}
         commit_message: 'ci: build version'
+        tag_version: "v9.0.0"
         files_to_commit: 'package.json,CHANGELOG.md,README.md'
     - name: next step
       uses: rymndhng/release-on-push-action@master
