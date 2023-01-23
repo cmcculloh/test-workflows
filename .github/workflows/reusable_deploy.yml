@@ -15,6 +15,7 @@ on:
 jobs:
   reusable_deploy:
     name: ${{ inputs.environment }} deploy
+    environment: ${{ inputs.environment }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
