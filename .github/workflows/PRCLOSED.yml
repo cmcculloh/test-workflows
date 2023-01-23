@@ -84,18 +84,24 @@ jobs:
         fetch-depth: 0
     - name: Patch?
       if: ${{ contains(github.event.*.labels.*.name, 'release:patch') }}
-      run: npm version patch
+      run: |
+        echo "patch specified"
+        npm version patch
     - name: Minor?
       if: ${{ contains(github.event.*.labels.*.name, 'release:minor') }}
-      run: npm version minor
+      run: |
+        echo "minor specified"
+        npm version minor
     - name: Major?
       if: ${{ contains(github.event.*.labels.*.name, 'release:major') }}
-      run: npm version major
+      run: |
+        echo "major specified"
+        npm version major
     - name: Get project's version
       id: version
       run: |
         PACKAGE_VERSION=$(node -p -e "require('./package.json').version")
-        echo ::set-output name=TAG::${PACKAGE_VERSION}
+        echo "TAG=${PACKAGE_VERSION}" >> $GITHUB_OUTPUT
     - name: Push files and tag
       uses: Amraneze/push-to-protected-branch@main
       with:
