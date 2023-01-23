@@ -10,6 +10,10 @@ on:
       - unlabeled
       - reopened
 
+concurrency:
+  group: ci-tests-${{ github.ref }}-1
+  cancel-in-progress: true
+
 jobs:
   check-labels:
     name: Check labels
