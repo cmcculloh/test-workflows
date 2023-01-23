@@ -58,6 +58,7 @@ jobs:
         bump_version_scheme: minor
         use_github_release_notes: true
   prod-deploy:
+    needs: version
     if: ${{ github.event.pull_request.merged == true }}
     uses: ./.github/workflows/prod-deploy.yml
     secrets: inherit
