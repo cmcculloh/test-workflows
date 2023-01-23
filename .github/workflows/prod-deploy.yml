@@ -12,6 +12,10 @@ on:
         description: "Tag to deploy (eg 1.0.0), defaults to latest"
         required: false
 
+concurrency:
+  group: prod-deploy-${{ github.ref }}-1
+  cancel-in-progress: true
+
 jobs:
   version:
     runs-on: ubuntu-latest

@@ -23,6 +23,11 @@ on:
         type: boolean
         default: true
 
+concurrency:
+  group: dev-deploy-${{ github.ref }}-1
+  cancel-in-progress: true
+
+
 jobs:
   validate:
     uses: ./.github/workflows/reusable_validate.yml
