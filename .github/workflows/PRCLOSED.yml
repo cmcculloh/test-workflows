@@ -66,6 +66,10 @@ jobs:
         run: echo "${{ toJSON(github.event.pull_request) }}"
       - name: All Info github.event.pull_request.type
         run: echo "${{ toJSON(github.event.pull_request.type) }}"
+      - name: REPO
+        run: echo "repository ${{ github.repository }}"
+      - name: branch
+        run: echo "branch_name ${{ github.ref_name }}"
   version:
     runs-on: ubuntu-latest
     env:
