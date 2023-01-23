@@ -50,4 +50,10 @@ jobs:
         run: echo "BUILD DOCKER IMAGE"
       - name: Push Docker Image
         if: ${{inputs.docker_push}}
-        run: echo "PUSH DOCKER IMAGE"
+        run: |
+          echo "PUSH DOCKER IMAGE"
+          echo "### Push to Docker! :rocket:" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY # this is a blank line
+          echo "- Just looking to add bullet points" >> $GITHUB_STEP_SUMMARY
+          echo "- And see what they look like" >> $GITHUB_STEP_SUMMARY
+          echo "- How about a third one?" >> $GITHUB_STEP_SUMMARY
