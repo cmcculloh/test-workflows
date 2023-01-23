@@ -11,7 +11,6 @@ on:
 
 jobs:
   prod-deploy:
-    needs: version
     uses: ./.github/workflows/prod-deploy.yml
     with:
       tag: ${{ inputs.tag }}
