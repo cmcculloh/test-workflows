@@ -1,9 +1,6 @@
-name: CD
+name: Manual Release
 
 on:
-  pull_request:
-    types:
-      - closed
   release:
     types: [released]
   workflow_dispatch:
