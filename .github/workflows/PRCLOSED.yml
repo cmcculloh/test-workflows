@@ -78,6 +78,15 @@ jobs:
       GH_TOKEN: ${{ secrets.ACCESS_TOKEN }}
       ACCESS_TOKEN_GITHUB: ${{ secrets.test-workflows }}
     steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - name: Bump project's version
+      id: version
+      run: |
+        PACKAGE_VERSION=$(node -p -e "require('./package.json').version")
+        echo ::set-output name=TAG::${PACKAGE_VERSION}
     - name: Push files and tag
       uses: Amraneze/push-to-protected-branch@main
       with:
@@ -85,7 +94,7 @@ jobs:
         branch_name: ${{ github.ref_name }}
         github_token: ${{ secrets.ACCESS_TOKEN }}
         commit_message: 'ci: build version'
-        tag_version: "v9.0.0"
+        tag_version: ${{ steps.version.outputs.TAG }}
         files_to_commit: 'package.json,CHANGELOG.md,README.md'
     - name: next step
       uses: rymndhng/release-on-push-action@master
