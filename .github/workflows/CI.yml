@@ -20,7 +20,7 @@ jobs:
           any_of: release:major,release:minor,release:patch,norelease
           repo_token: ${{ secrets.GITHUB_TOKEN }}
   dev-deploy:
-    if: ${{ github.event.action != 'unlabeled' && github.event.pull_request.merged != true }}
+    if: ${{ github.event.action != 'unlabeled' }}
     uses: ./.github/workflows/dev-deploy.yml
     with:
       docker_push: ${{ contains(github.event.*.labels.*.name, 'dev-deployment') }}
