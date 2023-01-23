@@ -82,7 +82,16 @@ jobs:
       uses: actions/checkout@v3
       with:
         fetch-depth: 0
-    - name: Bump project's version
+    - name: Patch?
+      if: ${{ contains(github.event.*.labels.*.name, 'release:patch') }}
+      run: npm version patch
+    - name: Minor?
+      if: ${{ contains(github.event.*.labels.*.name, 'release:minor') }}
+      run: npm version minor
+    - name: Major?
+      if: ${{ contains(github.event.*.labels.*.name, 'release:major') }}
+      run: npm version major
+    - name: Get project's version
       id: version
       run: |
         PACKAGE_VERSION=$(node -p -e "require('./package.json').version")
@@ -93,8 +102,9 @@ jobs:
         repository: ${{ github.repository }}
         branch_name: ${{ github.ref_name }}
         github_token: ${{ secrets.ACCESS_TOKEN }}
-        commit_message: 'ci: build version'
+        commit_message: 'ci: build version ${{ steps.version.outputs.TAG }}'
         tag_version: ${{ steps.version.outputs.TAG }}
+        create_tag: false
         files_to_commit: 'package.json,CHANGELOG.md,README.md'
     - name: next step
       uses: rymndhng/release-on-push-action@master
