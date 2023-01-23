@@ -80,7 +80,7 @@ jobs:
         PACKAGE_VERSION=$(node -p -e "require('./package.json').version")
         echo ::set-output name=TAG::${PACKAGE_VERSION}
     - name: Push files and tag
-      uses: Amraneze/push-to-protected-branch@latest
+      uses: Amraneze/push-to-protected-branch@main
       with:
         repository: ${{ github.repository }}
         branch_name: ${{ github.ref_name }}
