@@ -17,6 +17,7 @@ jobs:
         uses: technote-space/package-version-check-action@v1
 
   prod-deploy:
+    needs: version
     uses: ./.github/workflows/prod-deploy.yml
     with:
       tag: ${{ inputs.tag }}
