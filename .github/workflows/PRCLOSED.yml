@@ -74,33 +74,19 @@ jobs:
       GH_TOKEN: ${{ secrets.ACCESS_TOKEN }}
       ACCESS_TOKEN_GITHUB: ${{ secrets.test-workflows }}
     steps:
-    - uses: actions/checkout@v3
-      with:
-        # fetch full history so things like auto-changelog work properly
-        fetch-depth: 0
-    - name: Use Node.js ${{ env.node_version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ env.node_version }}
-        # setting a registry enables the NODE_AUTH_TOKEN env variable where we can set an npm token.  REQUIRED
-        registry-url: 'https://registry.npmjs.org'
-    - name: setup git config
+    - name: Bump project's version
+      id: version
       run: |
-        git config user.name "GitHub Actions Bot"
-        git config user.email "<>"
-    - name: Patch?
-      if: ${{ contains(github.event.*.labels.*.name, 'release:patch') }}
-      run: npm version patch
-    - name: Minor?
-      if: ${{ contains(github.event.*.labels.*.name, 'release:minor') }}
-      run: npm version minor
-    - name: Major?
-      if: ${{ contains(github.event.*.labels.*.name, 'release:major') }}
-      run: npm version major
-    - name: push
-      run: |
-        # Stage the file, commit and push
-        git push -f origin master
+        PACKAGE_VERSION=$(node -p -e "require('./package.json').version")
+        echo ::set-output name=TAG::${PACKAGE_VERSION}
+    - name: Push files and tag
+      uses: Amraneze/push-to-protected-branch@latest
+      with:
+        repository: ${{ github.repository }}
+        branch_name: ${{ github.ref_name }}
+        github_token: ${{ secrets.ACCESS_TOKEN }}
+        commit_message: 'ci: build version v${{ steps.version.outputs.TAG }}'
+        files_to_commit: 'package.json,CHANGELOG.md,README.md'
     - uses: rymndhng/release-on-push-action@master
       with:
         bump_version_scheme: minor
