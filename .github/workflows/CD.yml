@@ -12,34 +12,41 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
     steps:
+    - run: echo "### Continuous Deploy 🚀" >> $GITHUB_STEP_SUMMARY
+    - run: echo "Preparing to update package.json" >> $GITHUB_STEP_SUMMARY
     - name: Checkout
       uses: actions/checkout@v3
       with:
         fetch-depth: 0
+    - run: echo "Code checked out" >> $GITHUB_STEP_SUMMARY
     - name: setup git config
       run: |
         git config user.name "GitHub Actions Bot"
         git config user.email "<>"
+    - run: echo "Git configured" >> $GITHUB_STEP_SUMMARY
     - name: Patch?
       if: ${{ contains(github.event.*.labels.*.name, 'release:patch') }}
       run: |
-        echo "patch specified"
+        echo "patch was specified" >> $GITHUB_STEP_SUMMARY
         npm version patch
     - name: Minor?
       if: ${{ contains(github.event.*.labels.*.name, 'release:minor') }}
       run: |
-        echo "minor specified"
+        echo "minor was specified" >> $GITHUB_STEP_SUMMARY
         npm version minor
     - name: Major?
       if: ${{ contains(github.event.*.labels.*.name, 'release:major') }}
       run: |
-        echo "major specified"
+        echo "major was specified" >> $GITHUB_STEP_SUMMARY
         npm version major
     - name: Get current npm version
       id: version
       run: |
         PACKAGE_VERSION=$(node -p -e "require('./package.json').version")
         echo "TAG=${PACKAGE_VERSION}" >> $GITHUB_OUTPUT
+    - run: echo "package.json updated to ${{ steps.version.outputs.TAG }}" >> $GITHUB_STEP_SUMMARY
+    # This action creates a tag whether you want it to or not, so we will delete it in the next step,
+    # because the release-on-push-action _also_ creates a tag
     - name: Push files and tag
       uses: Amraneze/push-to-protected-branch@main
       with:
@@ -50,8 +57,11 @@ jobs:
         tag_version: ${{ steps.version.outputs.TAG }}
         create_tag: false
         files_to_commit: 'package.json'
+    - run: echo "package.json committed, pushed, and tagged" >> $GITHUB_STEP_SUMMARY
     - name: Delete useless tag that push-to-protected-branch creates that I don't need
       run: git push origin :refs/tags/${{ steps.version.outputs.TAG }}
+    - run: echo "unnecessary tag ${{ steps.version.outputs.TAG }} deleted" >> $GITHUB_STEP_SUMMARY
+    - run: echo "Github Release triggered for v${{ steps.version.outputs.TAG }}" >> $GITHUB_STEP_SUMMARY
     - name: Do actual release
       uses: rymndhng/release-on-push-action@master
       with:
