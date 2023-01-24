@@ -18,10 +18,15 @@ jobs:
     environment: ${{ inputs.environment }}
     runs-on: ubuntu-latest
     steps:
+      - run: echo "#### Deploying App" >> $GITHUB_STEP_SUMMARY
       - name: Checkout
         uses: actions/checkout@v3
+      - run: echo "Checkout run" >> $GITHUB_STEP_SUMMARY
       - name: Get Tag or SHA
         id: tag
         uses: tenhaus/get-release-or-tag@v2
-      - name: Deploy app:${{ inputs.tag || steps.tag.outputs.tag }} to ${{ inputs.environment }} using Harness
-        run: echo "DEPLOY USING HARNESS"
+      - run: echo "Got tag ${{ inputs.tag || steps.tag.outputs.tag }}" >> $GITHUB_STEP_SUMMARY
+      - name: Deploy app to Harness
+        run: |
+          echo "DEPLOY USING HARNESS"
+          echo "Deployed app:${{ inputs.tag || steps.tag.outputs.tag }} to ${{ inputs.environment }} using Harness" >> $GITHUB_STEP_SUMMARY
