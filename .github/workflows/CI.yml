@@ -24,6 +24,7 @@ jobs:
           any_of: release:major,release:minor,release:patch,norelease
           repo_token: ${{ secrets.GITHUB_TOKEN }}
   dev-deploy:
+    needs: check-labels
     if: ${{ github.event.action != 'unlabeled' }}
     uses: ./.github/workflows/dev-deploy.yml
     with:
