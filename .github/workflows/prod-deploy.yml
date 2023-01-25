@@ -17,11 +17,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  version:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Makes sure package.json is up to date
-        uses: technote-space/package-version-check-action@v1
   stage-deploy:
     uses: ./.github/workflows/stage-deploy.yml
     with:
