@@ -7,6 +7,7 @@ on:
 
 jobs:
   version:
+    name: Update package.json
     if: ${{ github.event.pull_request.merged == true }}
     runs-on: ubuntu-latest
     env:
@@ -48,6 +49,12 @@ jobs:
         files_to_commit: 'package.json'
     - name: Delete useless tag that push-to-protected-branch creates that I don't need
       run: git push origin :refs/tags/${{ steps.version.outputs.TAG }}
+  release:
+    name: Do Release
+    if: ${{ github.event.pull_request.merged == true }}
+    runs-on: ubuntu-latest
+    needs: version
+    steps:
     - name: Do actual release
       uses: rymndhng/release-on-push-action@master
       with:
