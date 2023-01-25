@@ -23,5 +23,5 @@ jobs:
       - name: Get Tag or SHA
         id: tag
         uses: tenhaus/get-release-or-tag@v2
-      - name: Deploy app to Harness
+      - name:  Deploy app:${{ inputs.tag || steps.tag.outputs.tag }} to ${{ inputs.environment }}
         run: echo "DEPLOY USING HARNESS"

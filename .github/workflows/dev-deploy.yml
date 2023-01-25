@@ -31,6 +31,8 @@ concurrency:
 jobs:
   validate:
     uses: ./.github/workflows/reusable_validate.yml
+    with:
+      tag: ${{ inputs.tag }}
     secrets: inherit
   build:
     needs: validate

@@ -2,22 +2,37 @@ name: Validate
 
 on:
   workflow_call:
+    inputs:
+      tag:
+        description: "Tag to build (eg 1.0.0|latest), defaults to building whatever branch called it"
+        required: false
+        type: string
 
 jobs:
   code-validation:
     name: Check Format, Lint and Tests
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Branch
+      - name: Get latest
+        if: ${{ inputs.tag == 'latest'}}
+        id: latest
+        uses: gregziegan/fetch-latest-release@v2.0.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Checkout
         uses: actions/checkout@v3
         with:
-          token: ${{ secrets.ACCESS_TOKEN_GITHUB }}
-      - name: Setup NodeJS
+          fetch-depth: 0
+          ref: ${{ steps.latest.outputs.tag_name || inputs.tag }}
+      - name: Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: 16.14.2
+      - name: Install Yarn
+        run: corepack enable
       - name: Install dependencies
-        run: yarn
+        run: yarn --immutable
+      - name: Build
       - name: Check Format
         run: yarn test:format
       - name: Lint
