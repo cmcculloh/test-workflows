@@ -22,7 +22,6 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-      - run: echo "#### Build 🛠️" >> $GITHUB_STEP_SUMMARY
       - name: Get latest
         if: ${{ inputs.tag == 'latest'}}
         id: latest
@@ -34,31 +33,22 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ steps.latest.outputs.tag_name || inputs.tag }}
-      - run: echo "Code checked out" >> $GITHUB_STEP_SUMMARY
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: 16.14.2
-      - run: echo "Node 16.14.2 setup" >> $GITHUB_STEP_SUMMARY
       - name: Install Yarn
         run: corepack enable
-      - run: echo "Yarn installed" >> $GITHUB_STEP_SUMMARY
       - name: Install dependencies
         run: yarn --immutable
-      - run: echo "Yarn run" >> $GITHUB_STEP_SUMMARY
       - name: Build
         run: yarn build
-      - run: echo "Build run" >> $GITHUB_STEP_SUMMARY
       - name: Get Tag or SHA
         id: tag
         uses: tenhaus/get-release-or-tag@v2
-      - run: echo "Got tag" >> $GITHUB_STEP_SUMMARY
       - name: Build Docker Image
         run: echo "BUILD DOCKER IMAGE"
-      - run: echo "Docker image built" >> $GITHUB_STEP_SUMMARY
       - name: Push Docker Image
         if: ${{inputs.docker_push}}
-        run: |
-          echo "PUSH DOCKER IMAGE"
-          echo "Docker image pushed" >> $GITHUB_STEP_SUMMARY
+        run: echo "PUSH DOCKER IMAGE"
 

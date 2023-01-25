@@ -8,27 +8,19 @@ jobs:
     name: Check Format, Lint and Tests
     runs-on: ubuntu-latest
     steps:
-      - run: echo "### Unit testing 🔬" >> $GITHUB_STEP_SUMMARY
       - name: Checkout Branch
         uses: actions/checkout@v3
         with:
           token: ${{ secrets.ACCESS_TOKEN_GITHUB }}
-      - run: echo "- checked out branch" >> $GITHUB_STEP_SUMMARY
       - name: Setup NodeJS
         uses: actions/setup-node@v3
         with:
           node-version: 16.14.2
-      - run: echo "- setup node" >> $GITHUB_STEP_SUMMARY
       - name: Install dependencies
         run: yarn
-      - run: echo "- ran yarn" >> $GITHUB_STEP_SUMMARY
       - name: Check Format
         run: yarn test:format
-      - run: echo "- ran yarn test:format" >> $GITHUB_STEP_SUMMARY
       - name: Lint
         run: yarn test:lint
-      - run: echo "- ran yarn test:lint" >> $GITHUB_STEP_SUMMARY
       - name: Unit Test
-        run: |
-          yarn test:unit
-          echo "- ran yarn test:unit" >> $GITHUB_STEP_SUMMARY # this is a blank line
+        run: yarn test:unit

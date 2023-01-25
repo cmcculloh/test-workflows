@@ -19,12 +19,10 @@ jobs:
     name: Check labels
     runs-on: ubuntu-latest
     steps:
-      - run: echo "### Continuous Integration 🚂" >> $GITHUB_STEP_SUMMARY
       - uses: docker://agilepathway/pull-request-label-checker:latest
         with:
           any_of: release:major,release:minor,release:patch,norelease
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-      - run: echo "Correct label(s) were applied" >> $GITHUB_STEP_SUMMARY
   dev-deploy:
     if: ${{ github.event.action != 'unlabeled' }}
     uses: ./.github/workflows/dev-deploy.yml
